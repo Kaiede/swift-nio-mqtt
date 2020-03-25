@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import Network
 import Dispatch
 import NIO
+import NIOSSL
 import NIOTransportServices
 import MQTTCodec
 
@@ -221,19 +221,25 @@ extension MQTTClient {
         group: EventLoopGroup,
         configuration: Configuration,
         mqttChannelHandler: MQTTChannelHandler
-    ) -> NIOTSConnectionBootstrap {
-        let bootstap = NIOTSConnectionBootstrap(group: group)
+    ) -> ClientBootstrap {
+        let bootstrap = ClientBootstrap(group: group)
             .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
             .channelOption(ChannelOptions.socket(SocketOptionLevel(IPPROTO_TCP), TCP_NODELAY), value: 1)
             .channelInitializer { channel in
-                initializeChannel(channel, mqttChannelHandler: mqttChannelHandler)
+                do {
+                    let configuration = configuration.tlsConfiguration ?? TLSConfiguration.forClient()
+                    let sslContext = try NIOSSLContext(configuration: configuration)
+                    let handler = try NIOSSLClientHandler(context: sslContext, serverHostname: nil)
+                    
+                    let _ = channel.pipeline.addHandler(handler)
+                } catch {
+                    // TODO: Failure?
+                }
+                
+                return initializeChannel(channel, mqttChannelHandler: mqttChannelHandler)
             }
 
-        if let tlsOptions = configuration.tlsOptions {
-            return bootstap.tlsOptions(tlsOptions)
-        }
-
-        return bootstap
+        return bootstrap
     }
 
     private static func initializeChannel(

@@ -7,7 +7,8 @@
 //
 
 import MQTTCodec
-import Network
+import NIOSSL
+import NIOTLS
 import struct Foundation.Data
 
 extension MQTTClient {
@@ -43,10 +44,9 @@ extension MQTTClient {
         ///
         /// - Note: If no connection retrying is required then this should be `nil`.
         public var connectionBackoff: ConnectionBackoff?
-
-        // TODO: Replace this with NIOSSL.
+        
         /// The TLS options for the connection.
-        var tlsOptions: NWProtocolTLS.Options? = nil
+        var tlsConfiguration: TLSConfiguration? = nil
 
         /// Create a `Configuration` with some pre-defined defaults.
         ///
@@ -73,18 +73,16 @@ extension MQTTClient {
             self.connectionBackoff = connectionBackoff
 
             if tlsEnabled {
-                tlsOptions = Configuration.makeTLSOptions()
+                tlsConfiguration = Configuration.makeTLSOptions()
             }
         }
 
         /// Make TLS opetions.
-        private static func makeTLSOptions() -> NWProtocolTLS.Options {
-            let options = NWProtocolTLS.Options()
+        private static func makeTLSOptions() -> TLSConfiguration {
+            // For now, don't perform peer validation.
+            let configuration = TLSConfiguration.forClient(certificateVerification: .none)
 
-            // Disable peer authentication for now
-            sec_protocol_options_set_peer_authentication_required(options.securityProtocolOptions, false)
-
-            return options
+            return configuration
         }
     }
 }

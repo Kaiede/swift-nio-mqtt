@@ -34,6 +34,6 @@ final class ConfigurationTests: XCTestCase {
         XCTAssertEqual(configuration.qos, .atMostOnce)
         XCTAssertEqual(configuration.username, username)
         XCTAssertEqual(configuration.password, password)
-        XCTAssertNotNil(configuration.tlsOptions)
+        XCTAssertNotNil(configuration.tlsConfiguration)
     }
 }
