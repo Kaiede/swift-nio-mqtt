@@ -11,7 +11,7 @@ on:
 jobs:
   build:
 
-    runs-on: macOS-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@master
@@ -31,3 +31,23 @@ jobs:
       run: bash <(curl -s https://codecov.io/bash) -J '^NIOMQTTClient$' -D .build/derivedData -t $CODECOV_TOKEN
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  buildUbuntu:
+
+    runs-on: runs-on: ubuntu-18.04
+    env:
+      Swift_Version: 5.2
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Install Swift
+      run: |
+        wget -q https://swift.org/builds/swift-${{ matrix.swift-version }}-release/ubuntu1804/swift-${{ matrix.swift-version }}-RELEASE/swift-${{ matrix.swift-version }}-RELEASE-ubuntu18.04.tar.gz
+        tar xzf swift-${{ matrix.swift-version }}-RELEASE-ubuntu18.04.tar.gz
+        echo "::add-path::$GITHUB_WORKSPACE/swift-${{ matrix.swift-version }}-RELEASE-ubuntu18.04/usr/bin" 
+        
+    - name: Run tests
+      run: |
+        swift build --build-tests --enable-test-discovery
+        swift test --enable-test-discovery
