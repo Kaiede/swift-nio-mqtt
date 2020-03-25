@@ -34,7 +34,7 @@ jobs:
 
   buildUbuntu:
 
-    runs-on: runs-on: ubuntu-18.04
+    runs-on: ubuntu-18.04
     env:
       Swift_Version: 5.2
 
