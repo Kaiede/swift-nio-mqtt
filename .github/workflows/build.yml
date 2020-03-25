@@ -1,5 +1,6 @@
 name: Build
 
+
 on:
   pull_request:
     branches:
@@ -43,9 +44,9 @@ jobs:
 
     - name: Install Swift
       run: |
-        wget -q https://swift.org/builds/swift-${{ env.Swift_Version }}-release/ubuntu1804/swift-${{ env.Swift_Version }}-RELEASE/swift-${{ env.Swift_Version }}-RELEASE-ubuntu18.04.tar.gz
-        tar xzf swift-${{ env.Swift_Version }}-RELEASE-ubuntu18.04.tar.gz
-        echo "::add-path::$GITHUB_WORKSPACE/swift-${{ env.Swift_Version }}-RELEASE-ubuntu18.04/usr/bin" 
+        wget -q https://swift.org/builds/swift-${Swift_Version}-release/ubuntu1804/swift-${Swift_Version}-RELEASE/swift-${Swift_Version}-RELEASE-ubuntu18.04.tar.gz
+        tar xzf swift-${Swift_Version}-RELEASE-ubuntu18.04.tar.gz
+        echo "::add-path::$GITHUB_WORKSPACE/swift-${Swift_Version}-RELEASE-ubuntu18.04/usr/bin" 
         
     - name: Run tests
       run: |
