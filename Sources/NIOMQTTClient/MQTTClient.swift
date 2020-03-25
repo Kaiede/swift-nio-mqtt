@@ -15,6 +15,11 @@ import MQTTCodec
 
 #if os(Linux)
 typealias MQTTEventLoopGroup = MultiThreadedEventLoopGroup
+extension MQTTEventLoopGroup {
+    convenience init() {
+        self.init(numberOfThreads: 1)
+    }
+}
 #else
 typealias MQTTEventLoopGroup = NIOTSEventLoopGroup
 #endif
