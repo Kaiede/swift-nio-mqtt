@@ -13,6 +13,12 @@ import NIOSSL
 import NIOTransportServices
 import MQTTCodec
 
+#if os(Linux)
+typealias MQTTEventLoopGroup = MultiThreadedEventLoopGroup
+#else
+typealias MQTTEventLoopGroup = NIOTSEventLoopGroup
+#endif
+
 public final class MQTTClient {
     public var onConnect: (() -> Void)?
     public var onDisconnect: ((Error?) -> Void)?
@@ -25,7 +31,7 @@ public final class MQTTClient {
     /// The configuration for this client.
     let configuration: Configuration
 
-    private let group: NIOTSEventLoopGroup
+    private let group: MQTTEventLoopGroup
     private var channel: EventLoopFuture<Channel> {
         willSet {
             willSetChannel(to: newValue)
@@ -43,7 +49,7 @@ public final class MQTTClient {
     public init(configuration: Configuration) {
         self.configuration = configuration
 
-        group = NIOTSEventLoopGroup()
+        group = MQTTEventLoopGroup()
         channel = group.next().makeFailedFuture(MQTTError.unavailable)
         connectivity = ConnectivityStateMonitor()
         session = Session(qos: configuration.qos)
